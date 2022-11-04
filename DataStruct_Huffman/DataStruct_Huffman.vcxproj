@@ -133,6 +133,7 @@
   <ItemGroup>
     <Text Include="1.txt" />
     <Text Include="2.txt" />
+    <Text Include="piao.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
