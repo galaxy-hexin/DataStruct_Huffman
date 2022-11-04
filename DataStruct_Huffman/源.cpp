@@ -1,6 +1,6 @@
 #include<iostream>
 using namespace std;
-constexpr auto ARRAYSIZE = 100*100;
+constexpr auto ARRAYSIZE = 1024*1024;
 constexpr auto WEIGHTMAXSIZE = 10000;
 constexpr auto MAXSIZE = 128;
 
@@ -11,7 +11,6 @@ struct huffman {
 	int rn;//the right node
 	int pa;//the parent node
 	char key[10];//the key of the values
-
 };
 
 /*
@@ -138,14 +137,14 @@ int code(char* values, int length, huffman Huf[MAXSIZE * 2 - 1],string& coderesu
 	int signal_current = 0;//当前字符的位置
 	int signal_parent = 0;//父节点的字符位置
 	int j = 0;//code遍历的计数器
-	char code[10] = { '\0' };//存放每个字符经过逆访问后的逆序编码
+	char code[15] = { '\0' };//存放每个字符经过逆访问后的逆序编码
 
 	for (int i = 0; i < length; i++)
 	{
 		signal_current = (int)values[i];//获得当前字符的ASCII码,也就是在Huffman树中的对应的位置
-		if (signal_current>255)
+		if (signal_current>255||signal_current<0)//防止出现ASCII码以外的字符。
 		{
-			cout << "erro";
+			cout << "请选择正确的文本，当前文本中存在不合法字符"<<endl;
 			exit(1);
 		}
 		signal_parent = Huf[signal_current].pa;//获得父结点的位置
@@ -162,7 +161,7 @@ int code(char* values, int length, huffman Huf[MAXSIZE * 2 - 1],string& coderesu
 			j++;
 		}
 		
-		for (int k = 9; k >= 0; k--)
+		for (int k = 14; k >= 0; k--)
 		/*将code逆序处理放入缓存string流*/
 		{
 			if (code[k] != '\0')
@@ -170,7 +169,7 @@ int code(char* values, int length, huffman Huf[MAXSIZE * 2 - 1],string& coderesu
 				coderesult = coderesult + code[k];
 			}
 		}
-		for (int k = 0; k < 10; k++)//缓存数组code[]重新置为空
+		for (int k = 0; k < 15; k++)//缓存数组code[]重新置为空
 			code[k] = '\0';
 		j = 0;
 	}
@@ -288,8 +287,9 @@ void decode(char* values, int length, huffman Huf[MAXSIZE * 2 - 1],int max) {
 	int m = max;
 	string num = { '\0' };
 	decode_key(values, length, num);
+	//cout << num;
 
-	for (int i = 0; i < length * 8; i++)
+	for (int i = 0; i < length * 8+1; i++)
 	{
 		if (num[i] == '0')
 		{
@@ -306,51 +306,52 @@ void decode(char* values, int length, huffman Huf[MAXSIZE * 2 - 1],int max) {
 			//cout << " ";
 			cout << Huf[m].value;
 			//cout << endl;
-			m = max;//将m置为堆顶位置。
+			m = max;//将m置为堆顶位置，以便重新遍历。
 		}
 	}
 
 }
 
 void use_code() {
-	int word_length = 0;
-	int code_length = 0;
-	int max = 0;
+	int word_length = 0;//文件字符长度
+	int code_length = 0;//编码长度
+	int max = 0;//堆顶元素获取
 	char filename[] = { "1.txt" };
 	char filename_decode[] = { "2.txt" };
 	char* values= new char[ARRAYSIZE]{ '\0' };
 	huffman Huf[MAXSIZE * 2 - 1] = { 0 };//设置Huffman树的存储数组
-	string coderesult;
+	string coderesult;//存放编码结果
 
-	huffman_creat(Huf);
+	huffman_creat(Huf);//初始化Huffman树
 	word_length = openfile_code(values,filename);//获取文件读取的字符数，以便之后的函数遍历
-	getword_weight(Huf, values);
-	max = HuffmanTree_Creat(Huf);
-	code_length = code(values, word_length, Huf, coderesult);
-	code_length = code_length / 8 + (code_length % 8 != 0);//计算原编码转换成二进制后的字符数，以便创建二维数组；
-	char* encoding_binary = new char[code_length];
-	
-	Encoding_binary(coderesult,encoding_binary);
-	writefile_code(filename_decode,encoding_binary,code_length);
+	getword_weight(Huf, values);//遍历获取权值
+	max = HuffmanTree_Creat(Huf);//建立树并得到树顶元素
+	code_length = code(values, word_length, Huf, coderesult);//编码得到0、1字符串，并返回字符串长度
+	//cout << coderesult << endl;
+	code_length = code_length / 8 + (code_length % 8 != 0);//计算原编码转换成二进制后的字符数，以便创建二维数组
+	char* encoding_binary = new char[code_length+1]();//创建一个数组
+	Encoding_binary(coderesult,encoding_binary);//将0、1字符串转换为字符数组
+	writefile_code(filename_decode,encoding_binary,code_length);//写入文件
+	delete[] encoding_binary;//释放内存
 
-	delete[] encoding_binary;
+	/*for (int i = 0; i < MAXSIZE * 2 - 1; i++)
+{
+	cout.width(6);
+	cout << Huf[i].value;
+	cout.width(4);
+	cout << i<<"序数";
+	cout.width(6);
+	cout << Huf[i].weight;
+	cout.width(4);
+	cout << Huf[i].ln;
+	cout.width(4);
+	cout << Huf[i].rn;
+	cout.width(4);
+	cout << Huf[i].pa;
+	cout << endl;
+}*/
 
-	//for (int i = 0; i < MAXSIZE * 2 - 1; i++)
-	//{
-	//	cout.width(6);
-	//	cout << Huf[i].value;
-	//	cout.width(4);
-	//	cout << i<<"序数";
-	//	cout.width(6);
-	//	cout << Huf[i].weight;
-	//	cout.width(4);
-	//	cout << Huf[i].ln;
-	//	cout.width(4);
-	//	cout << Huf[i].rn;
-	//	cout.width(4);
-	//	cout << Huf[i].pa;
-	//	cout << endl;
-	//}
+
 	cout << "译码内容为：" << endl;
 	int length_decode = 0;
 	length_decode = openfile_decode(values,filename_decode);
@@ -358,32 +359,7 @@ void use_code() {
 	delete[]  values;
 }
 
-//void use_decode() {}
-
 int main() {
-	use_code();
-
+	use_code();;
 }
 
-
-
-
-int File_size(char* FILENAME) {
-	FILE* fp;
-	errno_t err = fopen_s(&fp, FILENAME, "r");   //打开文件
-	int file_size;   //保存文件字符数
-	if (fp == NULL)
-	{
-		cout << "faile to open" << endl;
-		return 0;
-	}
-	else
-	{
-		if (fp == NULL)
-			return 0;
-		fseek(fp, 0, SEEK_END);      //将文件指针指向该文件的最后
-		file_size = ftell(fp);       //根据指针位置，此时可以算出文件的字符数
-		fclose(fp);
-		return file_size;
-	}
-}
