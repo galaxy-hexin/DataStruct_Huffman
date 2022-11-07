@@ -119,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,8 +133,13 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="1.txt" />
-    <Text Include="2.txt" />
     <Text Include="piao.txt" />
+    <Text Include="解压.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Code_Huffman.h" />
+    <ClInclude Include="Decode_Huffman.h" />
+    <ClInclude Include="Pre_Huffman.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

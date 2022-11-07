@@ -23,11 +23,22 @@
     <Text Include="1.txt">
       <Filter>资源文件</Filter>
     </Text>
-    <Text Include="2.txt">
-      <Filter>资源文件</Filter>
-    </Text>
     <Text Include="piao.txt">
       <Filter>资源文件</Filter>
     </Text>
+    <Text Include="解压.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Code_Huffman.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Decode_Huffman.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Pre_Huffman.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
